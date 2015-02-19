@@ -1,4 +1,8 @@
 local boundary = require('boundary')
+local Emitter = require('core').Emitter
+local Error = require('core').Error
+local Object = require('core').Object
+local Process = require('uv').Process
 
 local pollInterval = 1000
 local minValue = 1
