@@ -33,7 +33,7 @@ function Plugin:poll()
 	
 	self:emit('before_poll')
 
-	metrics = self:getMetrics()
+	local metrics = self:getMetrics()
 
 	self:report(metrics)
 	
