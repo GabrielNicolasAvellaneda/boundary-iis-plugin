@@ -43,19 +43,20 @@ function parsePerformanceCounterLine(line)
 end
 
 local _map = {
-	{metric = 'IIS_GENERAL_CPU_USAGE', perfCounterIdString = '', perfCounterLocalname = '\\\\computador\\memória\\% bytes confirmados em uso'},
-	{metric = 'IIS_GENERAL_MEMORY_FREE', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_GENERAL_MEMORY_PAGE_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_GENERAL_DISK_TIME', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_RESTARTS', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_REQUEST_WAIT_TIME', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_REQUESTS_QUEUED', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_EXECPTIONS_THROWN_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_ASPNET_TOTAL_COMMITTED_BYTES', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_SERVICE_GET_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_SERVICE_POST_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = ''},
-	{metric = 'IIS_SERVICE_CURRENT_CONNECTIONS', perfCounterIdString = '', perfCounterLocalname = ''}
+	{metric = 'IIS_GENERAL_CPU_USAGE', perfCounterIdString = '', perfCounterLocalname = '\\Processor(_Total)\\% Processor Time'},
+	{metric = 'IIS_GENERAL_CPU_QUEUE_LENGTH', perfCounterIdString = '', perfCounterLocalname = '\\System\\Processor Queue Length'},
+	{metric = 'IIS_GENERAL_MEMORY_FREE', perfCounterIdString = '', perfCounterLocalname = '\\Memory\\Available Bytes'},
+	{metric = 'IIS_GENERAL_MEMORY_PAGE_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = '\\Memory\\Pages/sec'},
+	{metric = 'IIS_GENERAL_DISK_TIME', perfCounterIdString = '', perfCounterLocalname = '\\PhysicalDisk(_Total)\\% Disk Time'},
+	{metric = 'IIS_ASPNET_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = '\\ASP.NET Applications(__Total__)\\Requests/Sec'},
+	{metric = 'IIS_ASPNET_RESTARTS', perfCounterIdString = '', perfCounterLocalname ='\\ASP.NET\\Application Restarts'},
+	{metric = 'IIS_ASPNET_REQUEST_WAIT_TIME', perfCounterIdString = '', perfCounterLocalname = '\\ASP.NET\\Request Wait Time'},
+	{metric = 'IIS_ASPNET_REQUESTS_QUEUED', perfCounterIdString = '', perfCounterLocalname = '\\ASP.NET\\Requests Queued'},
+	{metric = 'IIS_ASPNET_EXECPTIONS_THROWN_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = '\\.NET CLR Exceptions(_Global_)\\# of Exceps Thrown / sec'},
+	{metric = 'IIS_ASPNET_TOTAL_COMMITTED_BYTES', perfCounterIdString = '', perfCounterLocalname ='\\.NET CLR Memory(_Global_)\\# Total committed Bytes'},
+	{metric = 'IIS_SERVICE_GET_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = '\\Web Service(_Total)\\Get Requests/sec'},
+	{metric = 'IIS_SERVICE_POST_REQUESTS_PER_SECOND', perfCounterIdString = '', perfCounterLocalname = '\\Web Service(_Total)\\Post Requests/sec'},
+	{metric = 'IIS_SERVICE_CURRENT_CONNECTIONS', perfCounterIdString = '', perfCounterLocalname = '\\Web Service(_Total)\\Current Connections'}
 }
 
 function performanceCounterToMetric(performanceCounter, map)
