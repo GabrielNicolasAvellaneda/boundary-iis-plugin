@@ -18,12 +18,26 @@ plugin = CommandPlugin:new(boundary.param)
 
 --plugin:on('before_poll', function() p('before_poll') end)
 --plugin:on('after_poll', function() p('after_poll') end)
+
 function plugin:onParseCommandOutput(output)
 	local result = {}
-
-	result['IIS_CPU_USAGE'] = '123.45'
+	result['IIS_GENERAL_CPU_USAGE'] = '123.45'
+	result['IIS_GENERAL_MEMORY_FREE'] = '123.45'
+	result['IIS_GENERAL_MEMORY_PAGE_PER_SECOND'] = '123.45'
+	result['IIS_GENERAL_DISK_TIME'] = '123.45'
+	result['IIS_GENERAL_DISK_TIME'] = '123.45'
+	result['IIS_ASPNET_REQUESTS_PER_SECOND'] = '1234.45'
+	result['IIS_ASPNET_RESTARTS'] = '123.45'
+	result['IIS_ASPNET_REQUEST_WAIT_TIME'] = '123.45'
+	result['IIS_ASPNET_REQUESTS_QUEUED'] = '123.45'
+	result['IIS_ASPNET_EXECPTIONS_THROWN_PER_SECOND'] = '123.45'
+	result['IIS_ASPNET_TOTAL_COMMITTED_BYTES'] = '123.45'
+	result['IIS_SERVICE_GET_REQUESTS_PER_SECOND'] = '123.45'
+	result['IIS_SERVICE_POST_REQUESTS_PER_SECOND'] = '123.45'
+	result['IIS_SERVICE_CURRENT_CONNECTIONS'] = '123.45'
 
 	return result
+
 end
 
 plugin:poll()
