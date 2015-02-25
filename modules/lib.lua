@@ -4,7 +4,7 @@ local table = require('table')
 
 local lib = {}
 
-function string:split( inSplitPattern, outResults )
+function string.split(self, inSplitPattern, outResults )
 
    if not outResults then
       outResults = { }
@@ -20,6 +20,16 @@ function string:split( inSplitPattern, outResults )
    return outResults
 end
 
+function string.trim(self)
+   return string.match(self,"^()%s*$") and "" or string.match(self,"^%s*(.*%S)" )
+end
+
+function string.isEmpty(self)
+	local s = self:trim()
+	return (s == nil or s == '')
+end
+
 lib.split = string.split
+lib.trim = string.trim
 
 return lib

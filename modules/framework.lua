@@ -1,3 +1,5 @@
+-- [author] Gabriel Nicolas Avellaneda <avellaneda.gabriel@gmail.com>
+
 local boundary = require('boundary')
 local Emitter = require('core').Emitter
 local Error = require('core').Error

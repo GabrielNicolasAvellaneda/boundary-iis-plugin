@@ -1,4 +1,2 @@
-first line
-second line
-third line
-fourth line
+\\computador\memória\% bytes confirmados em uso : 81.4447516446157
+
