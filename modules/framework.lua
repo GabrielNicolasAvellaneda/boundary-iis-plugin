@@ -9,7 +9,8 @@ local timer = require('timer')
 local math = require('math')
 local string = require('string')
 local os = require('os')
-local childProcess = require('childprocess')
+local io = require('io')
+--local childProcess = require('childprocess')
 local lib = require('lib')
 
 local framework = {}
@@ -101,11 +102,17 @@ function CommandPlugin:initialize(params)
 end
 
 function CommandPlugin:execCommand(callback)
-	childProcess.execFile(self.command['cmd'], {self.command['args']}, {}, callback) 
+	--childProcess.execFile(self.command['cmd'], {self.command['args']}, {}, callback) 
+	local proc = io.popen(self.command, 'r')	
+	local output = proc:read("*a")
+	proc:close()
+	if callback then
+		callback(output)
+	end
 end
 
 function CommandPlugin:onPoll()
-	self:execCommand(function (_, stdout, stderr) self.parseCommandOutput(self, stdout) end)
+	self:execCommand(function (output) self.parseCommandOutput(self, output) end)
 end
 
 function CommandPlugin:parseCommandOutput(output)

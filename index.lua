@@ -16,19 +16,23 @@ local table = require('table')
 local params = boundary.param
 params.name = 'Boundary IIS Plugin'
 params.version = '1.0'
-params.command = { cmd = 'cat', args = "test\\lines.txt"}
+params.command = "powershell -NoProfile -File tools\\get-performance-counters.ps1"
+--params.command = 'cat test/lines.txt'
 
 plugin = CommandPlugin:new(boundary.param)
 
 --plugin:on('before_poll', function() p('before_poll') end)
 --plugin:on('after_poll', function() p('after_poll') end)
 
-
 local pfMap = {}
 
 function splitLines(str)
 
-	local lines = str:split('\n')
+	local lineTerminator = '\r\n'
+	if os.type() == 'Linux' then
+		lineTerminator = '\n'
+	end
+	local lines = str:split(lineTerminator)
 
 	return lines
 end
@@ -81,7 +85,6 @@ function plugin:onParseCommandOutput(output)
 			if (line:isEmpty()) then
 				return
 			end
-			--print(line)
 
 			local pc, val = parsePerformanceCounterLine(l)
 
@@ -95,6 +98,5 @@ function plugin:onParseCommandOutput(output)
 	return result
 
 end
-
 plugin:poll()
 
