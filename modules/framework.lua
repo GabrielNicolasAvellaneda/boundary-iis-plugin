@@ -7,6 +7,8 @@ local timer = require('timer')
 local math = require('math')
 local string = require('string')
 local os = require('os')
+local childProcess = require('childprocess')
+local lib = require('lib')
 
 local framework = {}
 
@@ -18,6 +20,8 @@ function Plugin:initialize(params)
 	self.source = os.hostname()
 	self.minValue = 0
 	self.maxValue = 10
+	self.version = params.version or '0.0'
+	self.name = params.name or 'Boundary Plugin'
 
 	if params ~= nil then
 		self.pollInterval = params.pollInterval or self.pollInterval
@@ -26,20 +30,25 @@ function Plugin:initialize(params)
 		self.maxvalue = params.maxValue or self.minValue
 	end
 
-	print("_bevent:Boundary LUA Sample plugin up : version 1.0|t:info|tags:lua,plugin")
+	print("_bevent:" .. self.name .. " up : version " .. self.version ..  "|t:info|tags:lua,plugin")
 end
 
 function Plugin:poll()
 	
 	self:emit('before_poll')
-
-	local metrics = self:getMetrics()
-
-	self:report(metrics)
 	
+	self:onPoll()
+
 	self:emit('after_poll')
 	timer.setTimeout(self.pollInterval, function () self.poll(self) end)
 end
+
+function Plugin:onPoll()
+	local metrics = self:getMetrics()
+
+	self:report(metrics)
+end
+
 
 function Plugin:report(metrics)
 	self:emit('report')
@@ -74,6 +83,37 @@ function Plugin:getMetrics()
     local metrics = self:onGetMetrics()	
 
 	return metrics
+end
+
+local CommandPlugin = Plugin:extend()
+framework.CommandPlugin = CommandPlugin
+
+function CommandPlugin:initialize(params)
+	Plugin.initialize(self, params)
+
+	if not params.command then
+		error('params.command undefined. You need to define the command to excetue.')
+	end
+	
+	self.command = params.command
+end
+
+function CommandPlugin:execCommand(callback)
+	childProcess.execFile(self.command['cmd'], {self.command['args']}, {}, callback) 
+end
+
+function CommandPlugin:onPoll()
+	self:execCommand(function (_, stdout, stderr) self.parseCommandOutput(self, stdout) end)
+end
+
+function CommandPlugin:parseCommandOutput(output)
+	local metrics = self:onParseCommandOutput(output)
+	self:report(metrics)
+end
+
+function CommandPlugin:onParseCommandOutput(output)
+	print(output)
+	return {}
 end
 
 return framework

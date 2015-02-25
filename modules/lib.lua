@@ -1,6 +1,9 @@
 local string = require('string')
 local table = require('table')
 
+
+local lib = {}
+
 function string:split( inSplitPattern, outResults )
 
    if not outResults then
@@ -16,3 +19,7 @@ function string:split( inSplitPattern, outResults )
    table.insert( outResults, string.sub( self, theStart ) )
    return outResults
 end
+
+lib.split = string.split
+
+return lib
