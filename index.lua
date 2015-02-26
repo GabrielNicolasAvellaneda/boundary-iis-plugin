@@ -12,27 +12,11 @@ local string = require('string')
 local os = require('os')
 local CommandPlugin = require('framework').CommandPlugin
 local table = require('table')
+local io = require('io')
 
-local params = boundary.param
-params.name = 'Boundary IIS Plugin'
-params.version = '1.0'
-params.command = "powershell -NoProfile -File tools\\get-performance-counters.ps1"
---params.command = 'cat test/lines.txt'
-
-plugin = CommandPlugin:new(boundary.param)
-
---plugin:on('before_poll', function() p('before_poll') end)
---plugin:on('after_poll', function() p('after_poll') end)
-
-local pfMap = {}
-
-function splitLines(str)
-
-	local lineTerminator = '\r\n'
-	if os.type() == 'Linux' then
-		lineTerminator = '\n'
-	end
-	local lines = str:split(lineTerminator)
+function splitLines(str, terminator)
+	
+	local lines = str:split(terminator)
 
 	return lines
 end
@@ -63,10 +47,82 @@ local _map = {
 	{metric = 'IIS_SERVICE_CURRENT_CONNECTIONS', perfCounterIdString = '', perfCounterLocalname = '\\Web Service(_Total)\\Current Connections'}
 }
 
+function concatPerformanceCounters(map)
+
+	local performanceCounters = {}
+		table.foreach(map, function (_, v)
+
+			table.insert(performanceCounters, '"' .. v.perfCounterLocalname .. '"')
+	end)
+
+	return table.concat(performanceCounters, " ")
+end
+
+function parsePerformanceCounterMappingLine(line)
+
+	local parts = line:split(' : ')
+
+	return parts[1], parts[2]	
+end
+
+function getPerformanceCounterMapItem(map, pc)
+	for k, v in pairs(map) do
+		if v.perfCounterLocalname == pc then
+			return v
+		end
+	end
+
+	return nil
+end
+
+
+function getPerformanceCounterLocalnamesMap(map)
+
+	local params = concatPerformanceCounters(map)
+	--local proc = io.popen('powershell -NoProfile -File tools\\get-performance-counter-mapping.ps1 ' .. params)
+	local proc = io.popen('cat ./test/mapping.txt')
+
+	local output = proc:read('*a')
+	proc:close()
+
+	local result = {}
+	local lines = splitLines(output, '\n')
+	table.foreach(lines, function (_, l) 
+		l = string.trim(l)
+		if l:isEmpty() then
+			return
+		end
+
+		local genericCounter, localCounter = parsePerformanceCounterMappingLine(l)
+		local item = getPerformanceCounterMapItem(map, genericCounter) 
+		if item then 
+			item.perfCounterLocalname = localCounter
+		end
+
+		table.insert(result, item)
+	end)
+
+	return result
+end
+
+-- Update the performance counter map to local names
+_map = getPerformanceCounterLocalnamesMap(_map)
+
+function cleanSpecialChars(str)
+	local clean = string.gsub(str, '%%', '')
+	clean = string.gsub(clean, '%(', '')
+	clean = string.gsub(clean, '%)', '')
+
+	return string.lower(clean)
+end
+
 function performanceCounterToMetric(performanceCounter, map)
 
 	for k,v in pairs(map) do
-		if v.perfCounterLocalname == performanceCounter then
+	    local perf1 = cleanSpecialChars(performanceCounter)
+	    local perf2 = cleanSpecialChars(v.perfCounterLocalname)
+		local exists, _ = string.find(perf1, perf2) 
+		if exists then
 			return v.metric
 		end
 	end
@@ -74,9 +130,17 @@ function performanceCounterToMetric(performanceCounter, map)
 	return nil
 end
 
+local params = boundary.param
+params.name = 'Boundary IIS Plugin'
+params.version = '1.0'
+params.command = "powershell -NoProfile -File tools\\get-performance-counters.ps1 " .. concatPerformanceCounters(_map) 
+--params.command = "powershell -NoProfile -File tools\\get-performance-counters-test.ps1" 
+--print(params.command)
+local plugin = CommandPlugin:new(boundary.param)
+
 function plugin:onParseCommandOutput(output)
 
-	local lines = splitLines(output)
+	local lines = splitLines(output, '\r\n')
 	local result = {}
 	table.foreach(lines, 
 		function (_, l)
@@ -91,7 +155,11 @@ function plugin:onParseCommandOutput(output)
 			local metric = performanceCounterToMetric(pc, _map)
 			if metric then
 				result[metric] = val
+			else
+				p(pc .. ' does not has a metric associated.')
+				p(_map)
 			end
+
 
 		end)
 	
@@ -99,4 +167,3 @@ function plugin:onParseCommandOutput(output)
 
 end
 plugin:poll()
-

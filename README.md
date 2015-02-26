@@ -8,7 +8,10 @@ A Boundary plugin that collects metrics from IIS performance counters.
 |:-------:|:-------:|
 |Supported|    v    |
 
-#### Metrics that will extract are:
+### Requirements
+To run this plugin you need Powershell
+
+### Metrics that will extract are:
 Tracks the following metrics for IIS/ASP.NET.
 For a detailed explanation of performance counters collected see this link: [http://blog.monitis.com/2012/04/02/important-iis7-counters/](http://blog.monitis.com/2012/04/02/important-iis7-counters/).
 
