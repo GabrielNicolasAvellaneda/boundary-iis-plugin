@@ -7,7 +7,15 @@ $counters = $args
 #$counters = "\Processor(_Total)\% Processor Time"
 #$counters = "\Processador(_Total)\% Tempo de Processador"
 
-(Get-Counter -Counter $counters).CounterSamples | ForEach-Object {Join-String -Strings $_.Path,$_.CookedValue -Separator ' : '}
+foreach ($c in $counters) {
+	try {
+		$result = Get-Counter -Counter $c -ErrorAction SilentlyContinue
+		$result.CounterSamples | ForEach-Object {Join-String -Strings $_.Path,$_.CookedValue -Separator ' : '}
+	}	
+	catch {
+
+	}
+}
 
 #Write-Output "\Processor(_Total)\% Processor Time : 123.45"
 #Write-Output "\System\Processor Queue Length : 123.45"
